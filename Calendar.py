@@ -6,3 +6,4 @@ def display_calendar(year, month):
     # Format the month and year
     cal_str = cal.formatmonth(year, month)
     print(cal_str)
+display_calendar(2025,4)
