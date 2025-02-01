@@ -1,0 +1,20 @@
+import numpy as np
+
+# Sample data: Stock Market Index (e.g., S&P 500) vs. Gold Prices (in USD per ounce)
+stock_index = [3500, 3600, 3700, 3800, 3900, 4000, 4100, 4200, 4300, 4400]
+gold_prices = [1900, 1850, 1800, 1750, 1700, 1650, 1600, 1550, 1500, 1450]
+
+# Calculate Pearson correlation coefficient
+correlation_coefficient = np.corrcoef(stock_index, gold_prices)[0, 1]
+
+# Display results
+print("Negative Correlation Analysis Between Stock Index and Gold Prices:")
+print(f"Pearson Correlation Coefficient: {correlation_coefficient:.2f}")
+
+# Interpretation
+if correlation_coefficient < 0:
+    print("There is a negative correlation: As stock prices increase, gold prices tend to decrease.")
+elif correlation_coefficient > 0:
+    print("There is a positive correlation: As stock prices increase, gold prices also tend to increase.")
+else:
+    print("No correlation: Stock prices and gold prices are not related.")
