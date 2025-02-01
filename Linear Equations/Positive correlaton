@@ -1,0 +1,20 @@
+import numpy as np
+
+# Sample data: Number of tourists (in millions) and average hotel prices (in USD)
+tourist_numbers = [10, 12, 15, 8, 20, 18, 25, 30, 22, 28]
+hotel_prices = [100, 120, 150, 90, 200, 180, 250, 300, 220, 280]
+
+# Calculate Pearson correlation coefficient
+correlation_coefficient = np.corrcoef(tourist_numbers, hotel_prices)[0, 1]
+
+# Display results
+print("Correlation Analysis Between Tourist Numbers and Hotel Prices:")
+print(f"Pearson Correlation Coefficient: {correlation_coefficient:.2f}")
+
+# Interpretation
+if correlation_coefficient > 0:
+    print("There is a positive correlation: As tourist numbers increase, hotel prices tend to increase.")
+elif correlation_coefficient < 0:
+    print("There is a negative correlation: As tourist numbers increase, hotel prices tend to decrease.")
+else:
+    print("No correlation: Tourist numbers and hotel prices are not related.")
