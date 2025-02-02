@@ -1,0 +1,48 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import linregress
+
+# Given GDP data (Year, GDP in billion USD)
+years = np.array([2019, 2020, 2021, 2022, 2023])
+gdp = np.array([2871, 2675, 3167, 3353, 3550])
+
+# 1️⃣ **Calculate Correlation**
+correlation_coefficient = np.corrcoef(years, gdp)[0, 1]
+
+# Check correlation type
+correlation_type = "Positive" if correlation_coefficient > 0 else "Negative" if correlation_coefficient < 0 else "No Correlation"
+
+# Print correlation details
+print(f"Correlation Coefficient: {correlation_coefficient:.3f} ({correlation_type} Correlation)")
+
+# 2️⃣ **Linear Regression (Linear Equation)**
+slope, intercept, r_value, p_value, std_err = linregress(years, gdp)
+
+# Linear equation in y = mx + c format
+print(f"Linear Equation: GDP = {slope:.2f} * Year + {intercept:.2f}")
+
+# Predict GDP for future years (2024 & 2025)
+future_years = np.array([2024, 2025])
+predicted_gdp = slope * future_years + intercept
+
+print(f"Predicted GDP for 2024: {round(predicted_gdp[0])} Billion USD")
+print(f"Predicted GDP for 2025: {round(predicted_gdp[1])} Billion USD")
+
+# 3️⃣ **Plot GDP Data & Regression Line**
+plt.figure(figsize=(10, 5))
+sns.scatterplot(x=years, y=gdp, color='blue', label="Actual GDP")
+plt.plot(years, slope * years + intercept, color='red', linestyle="--", label=f"Regression Line (y = {slope:.2f}x + {intercept:.2f})")
+
+# Predict & plot future values
+plt.scatter(future_years, predicted_gdp, color='green', label="Predicted GDP (2024-2025)", marker="x")
+
+# Graph Labels
+plt.xlabel("Year")
+plt.ylabel("GDP (Billion USD)")
+plt.title("India's GDP Analysis - Correlation & Linear Equation")
+plt.legend()
+plt.grid(True)
+
+# Show the plot
+plt.show()

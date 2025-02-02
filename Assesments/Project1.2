@@ -1,0 +1,65 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+from scipy.stats import binom, norm, bernoulli
+
+# Given GDP data (Year, GDP in billion USD)
+years = np.array([2019, 2020, 2021, 2022, 2023])
+gdp = np.array([2871, 2675, 3167, 3353, 3550])
+
+# Calculate Mean and Standard Deviation
+mean_gdp = np.mean(gdp)
+std_gdp = np.std(gdp)
+
+print(f"Mean GDP: {round(mean_gdp)} Billion USD")
+print(f"Standard Deviation of GDP: {round(std_gdp, 2)} Billion USD")
+
+# 1️⃣ **Bernoulli Distribution** (Success = GDP > 3000)
+gdp_success = gdp > 3000  # True (1) if GDP > 3000, else False (0)
+p_success = np.mean(gdp_success)
+
+print("\nBernoulli Distribution:")
+print(f"Probability of GDP > 3000: {p_success:.2f}")
+
+# Plot Bernoulli Distribution
+plt.figure(figsize=(12, 6))
+plt.subplot(2, 2, 1)
+plt.bar(["GDP ≤ 3000", "GDP > 3000"], [1 - p_success, p_success], color=["red", "green"])
+plt.title("Bernoulli Distribution (GDP > 3000)")
+plt.ylabel("Probability")
+
+# 2️⃣ **Binomial Distribution** (Simulating GDP > 3000 over 10 years)
+n_years = 10  # Simulating next 10 years
+binom_dist = binom.rvs(n=n_years, p=p_success, size=1000)
+
+# Plot Binomial Distribution
+plt.subplot(2, 2, 2)
+plt.hist(binom_dist, bins=range(n_years + 2), density=True, color="blue", alpha=0.7, edgecolor="black")
+plt.title("Binomial Distribution (10-Year GDP > 3000)")
+plt.xlabel("Number of Years with GDP > 3000")
+plt.ylabel("Probability")
+
+# 3️⃣ **Normal Distribution** (Assuming GDP follows normal distribution)
+x = np.linspace(min(gdp) - 200, max(gdp) + 200, 100)
+pdf_values = norm.pdf(x, mean_gdp, std_gdp)
+
+plt.subplot(2, 2, 3)
+plt.plot(x, pdf_values, color="purple")
+plt.axvline(mean_gdp, color="red", linestyle="dashed", label=f"Mean GDP = {round(mean_gdp)}")
+plt.title("Normal Distribution (GDP)")
+plt.xlabel("GDP (Billion USD)")
+plt.ylabel("Density")
+plt.legend()
+
+# 4️⃣ **Random Sampling (Picking 3 Random GDP Values)**
+random_gdp_samples = np.random.choice(gdp, size=3, replace=False)
+print("\nRandom GDP Samples:", random_gdp_samples)
+
+plt.subplot(2, 2, 4)
+plt.bar(["Sample 1", "Sample 2", "Sample 3"], random_gdp_samples, color="orange")
+plt.title("Random Sampling of GDP Data")
+plt.ylabel("GDP (Billion USD)")
+
+# Show all plots
+plt.tight_layout()
+plt.show()

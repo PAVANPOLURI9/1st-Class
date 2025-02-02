@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+# Given GDP data (Year, GDP in billion USD)
+years = np.array([2019, 2020, 2021, 2022, 2023])
+gdp = np.array([2871, 2675, 3167, 3353, 3550])
+
+# 1️⃣ **Calculate Mean, Median, and Mode**
+mean_gdp = np.mean(gdp)
+median_gdp = np.median(gdp)
+
+# Fix for mode calculation in SciPy (Ensure it returns a single value)
+mode_result = stats.mode(gdp, keepdims=True)  # Fix for newer versions of SciPy
+mode_gdp = mode_result.mode[0] if mode_result.count[0] > 1 else "No Mode"
+
+# Print the values
+print(f"Mean GDP: {round(mean_gdp)} Billion USD")
+print(f"Median GDP: {round(median_gdp)} Billion USD")
+print(f"Mode GDP: {mode_gdp} Billion USD")
+
+# 2️⃣ **Plot the GDP Data with Mean, Median, Mode**
+plt.figure(figsize=(10, 5))
+sns.histplot(gdp, bins=5, kde=True, color='#FFCDD5', alpha=0.6)
+
+# Add vertical lines for Mean, Median, and Mode
+plt.axvline(mean_gdp, color='red', linestyle="--", label=f"Mean = {round(mean_gdp)}")
+plt.axvline(median_gdp, color='green', linestyle="--", label=f"Median = {round(median_gdp)}")
+
+if isinstance(mode_gdp, (int, float)):  # Only plot mode if it exists
+    plt.axvline(mode_gdp, color='purple', linestyle="--", label=f"Mode = {round(mode_gdp)}")
+
+# Graph Labels
+plt.xlabel("GDP (Billion USD)")
+plt.ylabel("Frequency")
+plt.title("India's GDP Analysis - Mean, Median & Mode")
+plt.legend()
+plt.grid(True)
+
+# Show the plot
+plt.show()
