@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 from scipy.stats import norm, bernoulli, binom, mode
 
 # Discrete GDP data (rounded to nearest whole number)
@@ -75,11 +76,9 @@ random_samples = np.random.choice(gdp_data, size=5, replace=True)
 print(f"Random GDP Samples: {random_samples}")
 
 # 9. Correlation - Positive and Negative
-# Creating a hypothetical variable for correlation analysis
-economic_index = np.array([75, 73, 78, 80, 85])  # Example Economic Index
+economic_index = np.array([75, 73, 78, 80, 85])
 positive_correlation = np.corrcoef(gdp_data, economic_index)[0, 1]
-
-negative_variable = np.array([100, 95, 90, 85, 80])  # Example Inverse Relationship
+negative_variable = np.array([100, 95, 90, 85, 80])
 negative_correlation = np.corrcoef(gdp_data, negative_variable)[0, 1]
 
 print(f"Positive Correlation (GDP vs Economic Index): {positive_correlation:.2f}")
@@ -98,10 +97,36 @@ predicted_gdp_2024 = linear_equation(2024)
 print(f"Linear Equation: GDP = {m:.2f} * Year + {c:.2f}")
 print(f"Predicted GDP for 2024 using Linear Equation: {round(predicted_gdp_2024)} Billion USD")
 
-# Plotting the Linear Equation
+# 11. Matrix Analysis - GDP Growth Trends
+gdp_matrix = np.array(gdp_data).reshape(-1, 1)
+growth_rates = np.diff(gdp_data) / gdp_data[:-1]
+growth_matrix = np.array(growth_rates).reshape(-1, 1)
+
+# Formatting matrices using pandas
+gdp_df = pd.DataFrame(gdp_matrix, columns=["GDP (Billion USD)"])
+growth_df = pd.DataFrame(growth_matrix, columns=["GDP Growth Rate"])
+
+print("\nGDP Matrix:")
+print(gdp_df)
+print("\nGrowth Rate Matrix:")
+print(growth_df)
+
+# Adjusting covariance calculation
+cov_matrix = np.cov(gdp_matrix[:-1].T, growth_matrix.T)
+print("\nCovariance Matrix:")
+print(pd.DataFrame(cov_matrix, columns=["GDP", "Growth Rate"], index=["GDP", "Growth Rate"]))
+
+# Heatmap for covariance matrix
+plt.figure(figsize=(6, 4))
+sns.heatmap(pd.DataFrame(cov_matrix, columns=["GDP", "Growth Rate"], index=["GDP", "Growth Rate"]), annot=True, cmap='coolwarm', fmt='.2f')
+plt.title("Covariance Matrix Heatmap")
+plt.show()
+
+# 12. Plotting Linear Equation
+gdp_trend = [linear_equation(year) for year in years]
 plt.figure(figsize=(6, 4))
 plt.scatter(years, gdp_data, color='blue', label="Actual GDP")
-plt.plot(years, linear_equation(years), color='red', linestyle='dashed', label="Linear Equation")
+plt.plot(years, gdp_trend, color='red', linestyle='dashed', label="Linear Equation")
 plt.xlabel("Year")
 plt.ylabel("GDP (Billion USD)")
 plt.title("Linear Equation for GDP")
