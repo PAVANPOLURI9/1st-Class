@@ -1,0 +1,134 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from scipy.stats import norm, bernoulli, binom, mode
+
+# Discrete GDP data (rounded to nearest whole number)
+years = np.array([2019, 2020, 2021, 2022, 2023])
+gdp_data = np.array([2870, 2675, 3167, 3353, 3550])  # GDP in Billion USD
+
+# 1. Probability Calculations
+probabilities = gdp_data / np.sum(gdp_data)  # Normalized probabilities
+
+# 2. Probability Mass Function (PMF)
+plt.figure(figsize=(15, 5))
+
+plt.subplot(2, 3, 1)
+plt.bar(gdp_data, probabilities, color='blue', alpha=0.7)
+plt.xlabel("GDP (Billion USD)")
+plt.ylabel("Probability")
+plt.title("Probability Mass Function (PMF)")
+
+# 3. Cumulative Distribution Function (CDF)
+cdf_values = np.cumsum(probabilities)
+
+plt.subplot(2, 3, 2)
+plt.plot(gdp_data, cdf_values, marker='o', linestyle='-', color='green')
+plt.xlabel("GDP (Billion USD)")
+plt.ylabel("Cumulative Probability")
+plt.title("Cumulative Distribution Function (CDF)")
+
+# 4. Probability Density Function (PDF) - Approximated using Normal Distribution
+mu, sigma = np.mean(gdp_data), np.std(gdp_data)
+x = np.linspace(min(gdp_data), max(gdp_data), 100)
+pdf_values = norm.pdf(x, mu, sigma)
+
+plt.subplot(2, 3, 3)
+plt.plot(x, pdf_values, color='red')
+plt.xlabel("GDP (Billion USD)")
+plt.ylabel("Density")
+plt.title("Probability Density Function (PDF)")
+
+# 5. Mean, Median, Mode
+mean_gdp = np.mean(gdp_data)
+median_gdp = np.median(gdp_data)
+mode_result = mode(gdp_data, keepdims=True)  # Ensure compatibility with new SciPy versions
+mode_gdp = mode_result.mode[0] if mode_result.count[0] > 1 else None
+
+print(f"Mean GDP: {mean_gdp} Billion USD")
+print(f"Median GDP: {median_gdp} Billion USD")
+print(f"Mode GDP: {mode_gdp} Billion USD")
+
+# 6. Bernoulli Distribution - Success if GDP > 3000
+bernoulli_trials = (gdp_data > 3000).astype(int)
+bernoulli_p = np.mean(bernoulli_trials)
+
+plt.subplot(2, 3, 4)
+sns.histplot(bernoulli.rvs(bernoulli_p, size=1000), discrete=True, bins=2, color='purple')
+plt.xticks([0, 1], ["GDP ≤ 3000", "GDP > 3000"])
+plt.title("Bernoulli Distribution")
+
+# 7. Binomial Distribution - Counting high-GDP years
+binom_n = len(gdp_data)
+binom_p = bernoulli_p
+x_binom = np.arange(0, binom_n + 1)
+binom_values = binom.pmf(x_binom, binom_n, binom_p)
+
+plt.subplot(2, 3, 5)
+plt.bar(x_binom, binom_values, color='orange', alpha=0.7)
+plt.xlabel("Number of High-GDP Years")
+plt.ylabel("Probability")
+plt.title("Binomial Distribution")
+
+# 8. Random Sampling from GDP data
+random_samples = np.random.choice(gdp_data, size=5, replace=True)
+print(f"Random GDP Samples: {random_samples}")
+
+# 9. Correlation - Positive and Negative
+economic_index = np.array([75, 73, 78, 80, 85])
+positive_correlation = np.corrcoef(gdp_data, economic_index)[0, 1]
+negative_variable = np.array([100, 95, 90, 85, 80])
+negative_correlation = np.corrcoef(gdp_data, negative_variable)[0, 1]
+
+print(f"Positive Correlation (GDP vs Economic Index): {positive_correlation:.2f}")
+print(f"Negative Correlation (GDP vs Inverse Index): {negative_correlation:.2f}")
+
+# 10. Linear Equation Calculation
+y1, y2 = gdp_data[0], gdp_data[-1]
+x1, x2 = years[0], years[-1]
+m = (y2 - y1) / (x2 - x1)  # Slope
+c = y1 - m * x1  # Intercept
+
+def linear_equation(year):
+    return m * year + c
+
+predicted_gdp_2024 = linear_equation(2024)
+print(f"Linear Equation: GDP = {m:.2f} * Year + {c:.2f}")
+print(f"Predicted GDP for 2024 using Linear Equation: {round(predicted_gdp_2024)} Billion USD")
+
+# 11. Matrix Analysis - GDP Growth Trends
+gdp_matrix = np.array(gdp_data).reshape(-1, 1)
+growth_rates = np.diff(gdp_data) / gdp_data[:-1]
+growth_matrix = np.array(growth_rates).reshape(-1, 1)
+
+# Formatting matrices using pandas
+gdp_df = pd.DataFrame(gdp_matrix, columns=["GDP (Billion USD)"])
+growth_df = pd.DataFrame(growth_matrix, columns=["GDP Growth Rate"])
+
+print("\nGDP Matrix:")
+print(gdp_df)
+print("\nGrowth Rate Matrix:")
+print(growth_df)
+
+# Adjusting covariance calculation
+cov_matrix = np.cov(gdp_matrix[:-1].T, growth_matrix.T)
+print("\nCovariance Matrix:")
+print(pd.DataFrame(cov_matrix, columns=["GDP", "Growth Rate"], index=["GDP", "Growth Rate"]))
+
+# Heatmap for covariance matrix
+plt.figure(figsize=(6, 4))
+sns.heatmap(pd.DataFrame(cov_matrix, columns=["GDP", "Growth Rate"], index=["GDP", "Growth Rate"]), annot=True, cmap='coolwarm', fmt='.2f')
+plt.title("Covariance Matrix Heatmap")
+plt.show()
+
+# 12. Plotting Linear Equation
+gdp_trend = [linear_equation(year) for year in years]
+plt.figure(figsize=(6, 4))
+plt.scatter(years, gdp_data, color='blue', label="Actual GDP")
+plt.plot(years, gdp_trend, color='red', linestyle='dashed', label="Linear Equation")
+plt.xlabel("Year")
+plt.ylabel("GDP (Billion USD)")
+plt.title("Linear Equation for GDP")
+plt.legend()
+plt.show()
